@@ -95,7 +95,9 @@ int main()
     printf("Start OSC encoder.\n");
 
 #ifdef PIGPIO
-    if (gpioInitialise() < 0) {
+    gpioTerminate();
+    if (gpioInitialise() < 0)
+    {
         printf("Failed to initialise GPIO\n");
         return 1;
     }
