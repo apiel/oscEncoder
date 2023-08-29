@@ -94,6 +94,13 @@ int main()
 {
     printf("Start OSC encoder.\n");
 
+#ifdef PIGPIO
+    if (gpioInitialise() < 0) {
+        printf("Failed to initialise GPIO\n");
+        return 1;
+    }
+#endif
+
     RotaryEncoder encoders[ENCODER_COUNT] = {
         RotaryEncoder(4, 27, 1, 80),
         RotaryEncoder(25, 24, 1, 81),
@@ -104,7 +111,6 @@ int main()
     {
         usleep(1000);
     }
-    
 
     return 0;
 }
