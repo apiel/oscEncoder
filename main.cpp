@@ -12,6 +12,8 @@
 
 #define ENCODER_COUNT 4
 
+lo_address t = lo_address_new(NULL, "8888");
+
 class RotaryEncoder
 {
 protected:
@@ -27,12 +29,8 @@ protected:
 
     void send(uint8_t direction)
     {
-        // std::vector<unsigned char> message;
-        // message.push_back(0xB0 + channel);
-        // message.push_back(cc);
-        // message.push_back(direction);
-        // midiHandler(&message);
         printf("[cc %d] send: %d\n", cc, direction);
+        lo_send(t, "/midi", "ccc", 0xB0 + channel, cc, direction);
     }
 
 public:
@@ -42,8 +40,8 @@ public:
     uint8_t cc;
     uint8_t channel;
 
-    RotaryEncoder(int _gpioA, int _gpioB, uint8_t _cc, uint8_t _channel)
-        : gpioA(_gpioA), gpioB(_gpioB), cc(_cc), channel(_channel)
+    RotaryEncoder(int _gpioA, int _gpioB, uint8_t _channel, uint8_t _cc)
+        : gpioA(_gpioA), gpioB(_gpioB), channel(_channel), cc(_cc)
     {
         printf("gpioA: %d, gpioB: %d, cc: %d, channel: %d\n", gpioA, gpioB, cc, channel);
 
@@ -102,6 +100,13 @@ int main()
         return 1;
     }
 #endif
+
+    if (!t)
+    {
+        printf("Failed to create osc client\n");
+        return 1;
+    }
+    printf("Initialised osc client on port 8888\n");
 
     RotaryEncoder encoders[ENCODER_COUNT] = {
         RotaryEncoder(4, 27, 1, 80),
