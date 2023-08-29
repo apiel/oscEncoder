@@ -102,9 +102,8 @@ int main()
 #endif
 
     RotaryEncoder encoders[ENCODER_COUNT] = {
-        RotaryEncoder(25, 24, 1, 81),
-
         RotaryEncoder(4, 27, 1, 80),
+        RotaryEncoder(25, 24, 1, 81),
         RotaryEncoder(19, 16, 1, 82),
         RotaryEncoder(21, 20, 1, 83)};
 
