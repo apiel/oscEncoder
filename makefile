@@ -1,6 +1,8 @@
 LIBLO=`pkg-config --cflags --libs liblo`
 
-# GPIO=-lpigpio -lrt -DPIGPIO=1
+ifneq ($(shell uname -m),x86_64)
+GPIO := -lpigpio -lrt -DPIGPIO=1
+endif
 
 all: build run
 
