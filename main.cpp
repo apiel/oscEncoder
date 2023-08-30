@@ -12,7 +12,7 @@
 
 #define ENCODER_COUNT 4
 
-lo_address t = lo_address_new(NULL, "8888");
+lo_address oscClient = lo_address_new(NULL, "8888");
 
 class RotaryEncoder
 {
@@ -30,7 +30,7 @@ protected:
     void send(uint8_t direction)
     {
         printf("[cc %d] send: %d\n", cc, direction);
-        lo_send(t, "/midi", "ccc", 0xB0 + channel, cc, direction);
+        lo_send(oscClient, "/midi", "ccc", 0xB0 + channel, cc, direction);
     }
 
 public:
@@ -93,7 +93,6 @@ int main()
     printf("Start OSC encoder.\n");
 
 #ifdef PIGPIO
-    gpioTerminate();
     if (gpioInitialise() < 0)
     {
         printf("Failed to initialise GPIO\n");
@@ -101,18 +100,18 @@ int main()
     }
 #endif
 
-    if (!t)
+    if (!oscClient)
     {
-        printf("Failed to create osc client\n");
+        printf("Failed to create OSC client\n");
         return 1;
     }
-    printf("Initialised osc client on port 8888\n");
+    printf("Initialized OSC client on port 8888\n");
 
     RotaryEncoder encoders[ENCODER_COUNT] = {
-        RotaryEncoder(4, 27, 1, 80),
-        RotaryEncoder(25, 24, 1, 81),
-        RotaryEncoder(19, 16, 1, 82),
-        RotaryEncoder(21, 20, 1, 83)};
+        {4, 27, 1, 80},
+        {25, 24, 1, 81},
+        {19, 16, 1, 82},
+        {21, 20, 1, 83}};
 
     while (1)
     {
