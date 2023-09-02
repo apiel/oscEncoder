@@ -30,7 +30,7 @@ protected:
     void send(uint8_t direction)
     {
         // printf("[encoderId %d] send: %d\n", encoderId, direction);
-        lo_send(oscClient, "/encoder", "cc", encoderId, direction);
+        lo_send(oscClient, "/encoder", "ii", encoderId, direction);
     }
 
 public:
