@@ -29,21 +29,20 @@ protected:
 
     void send(uint8_t direction)
     {
-        printf("[cc %d] send: %d\n", cc, direction);
-        lo_send(oscClient, "/midi", "ccc", 0xB0 + channel, cc, direction);
+        // printf("[encoderId %d] send: %d\n", encoderId, direction);
+        lo_send(oscClient, "/encoder", "cc", encoderId, direction);
     }
 
 public:
     // void (*midiHandler)(std::vector<unsigned char>* message) = NULL;
     int gpioA;
     int gpioB;
-    uint8_t cc;
-    uint8_t channel;
+    uint8_t encoderId;
 
-    RotaryEncoder(int _gpioA, int _gpioB, uint8_t _channel, uint8_t _cc)
-        : gpioA(_gpioA), gpioB(_gpioB), channel(_channel), cc(_cc)
+    RotaryEncoder(int _gpioA, int _gpioB, uint8_t _encoderId)
+        : gpioA(_gpioA), gpioB(_gpioB), encoderId(_encoderId)
     {
-        printf("gpioA: %d, gpioB: %d, cc: %d, channel: %d\n", gpioA, gpioB, cc, channel);
+        printf("gpioA: %d, gpioB: %d, encoderId: %d\n", gpioA, gpioB, encoderId);
 
 #ifdef PIGPIO
         gpioSetMode(gpioA, PI_INPUT);
@@ -108,10 +107,10 @@ int main()
     printf("Initialized OSC client on port 8888\n");
 
     RotaryEncoder encoders[ENCODER_COUNT] = {
-        {4, 27, 1, 80},
-        {25, 24, 1, 81},
-        {19, 16, 1, 82},
-        {21, 20, 1, 83}};
+        {4, 27, 0},
+        {25, 24, 1},
+        {19, 16, 2},
+        {21, 20, 3}};
 
     while (1)
     {
