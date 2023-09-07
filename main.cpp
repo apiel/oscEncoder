@@ -73,14 +73,14 @@ public:
             {
                 if (levelB)
                 {
-                    send(1);
+                    send(-1);
                 }
             }
             else if ((gpio == gpioB) && (level == 1))
             {
                 if (levelA)
                 {
-                    send(-1);
+                    send(1);
                 }
             }
         }
