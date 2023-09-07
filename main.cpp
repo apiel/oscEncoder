@@ -80,7 +80,7 @@ public:
             {
                 if (levelA)
                 {
-                    send(127); // -1
+                    send(-1); // -1
                 }
             }
         }
