@@ -9,5 +9,8 @@ all: build run
 build:
 	g++ -o oscEncoder main.cpp $(LIBLO) $(GPIO)
 
+tester:
+	g++ -o encoderTester encoderTester.cpp $(GPIO)
+
 run:
 	./oscEncoder
