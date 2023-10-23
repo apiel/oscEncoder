@@ -9,10 +9,13 @@
 #include <vector>
 #include <stdio.h>
 #include <unistd.h>
+#include <cstring>
 
-#define ENCODER_COUNT 4
+#define ENCODER_COUNT 8
+#define BUTTON_COUNT 9
 
 lo_address oscClient = lo_address_new(NULL, "8888");
+bool debug = false;
 
 class RotaryEncoder
 {
@@ -29,7 +32,10 @@ protected:
 
     void send(uint8_t direction)
     {
-        // printf("[encoderId %d] send: %d\n", encoderId, direction);
+        if (debug)
+        {
+            printf("[encoderId %d] send: %d\n", encoderId, direction);
+        }
         lo_send(oscClient, "/encoder", "ii", encoderId, direction);
     }
 
@@ -42,7 +48,7 @@ public:
     RotaryEncoder(int _gpioA, int _gpioB, uint8_t _encoderId)
         : gpioA(_gpioA), gpioB(_gpioB), encoderId(_encoderId)
     {
-        printf("gpioA: %d, gpioB: %d, encoderId: %d\n", gpioA, gpioB, encoderId);
+        printf("[encoderId: %d] gpioA: %d, gpioB: %d\n", encoderId, gpioA, gpioB);
 
 #ifdef PIGPIO
         gpioSetMode(gpioA, PI_INPUT);
@@ -87,7 +93,47 @@ public:
     }
 };
 
-int main()
+class Button
+{
+protected:
+    static void pulseEx(int gpio, int level, uint32_t tick, void *user)
+    {
+        Button *self = (Button *)user;
+        self->pulse(gpio, level, tick);
+    }
+
+    void send(uint8_t direction, uint32_t tick)
+    {
+        if (debug)
+        {
+            printf("[buttomId %d] send: %d\n", buttomId, direction);
+        }
+        lo_send(oscClient, "/button", "iii", buttomId, direction, tick);
+    }
+
+public:
+    int gpio;
+    uint8_t buttomId;
+
+    Button(int _gpio, uint8_t _buttomId)
+        : gpio(_gpio), buttomId(_buttomId)
+    {
+        printf("[buttomId %d] gpio: %d\n", buttomId, gpio);
+
+#ifdef PIGPIO
+        gpioSetMode(gpio, PI_INPUT);
+        gpioSetPullUpDown(gpio, PI_PUD_UP);
+        gpioSetAlertFuncEx(gpio, pulseEx, this);
+#endif
+    }
+
+    void pulse(int gpio, int level, uint32_t tick)
+    {
+        send(level, tick);
+    }
+};
+
+int main(int argc, char **argv)
 {
     printf("Start OSC encoder.\n");
 
@@ -99,6 +145,12 @@ int main()
     }
 #endif
 
+    if (argc == 2 && strcmp(argv[1], "--debug") == 0)
+    {
+        printf("Debug mode\n");
+        debug = true;
+    }
+
     if (!oscClient)
     {
         printf("Failed to create OSC client\n");
@@ -107,10 +159,27 @@ int main()
     printf("Initialized OSC client on port 8888\n");
 
     RotaryEncoder encoders[ENCODER_COUNT] = {
-        {4, 27, 0},
-        {25, 24, 1},
-        {19, 16, 2},
-        {21, 20, 3}};
+        {1, 7, 0},
+        {11, 8, 1},
+        {25, 9, 2},
+        {10, 24, 3},
+        {21, 20, 4},
+        {16, 12, 5},
+        {23, 18, 6},
+        {15, 14, 7},
+    };
+
+    Button buttons[BUTTON_COUNT] = {
+        {26, 0},
+        {19, 1},
+        {13, 2},
+        {6, 3},
+        {5, 4},
+        {22, 5},
+        {27, 6},
+        {17, 7},
+        {4, 8},
+    };
 
     while (1)
     {

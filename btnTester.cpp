@@ -29,7 +29,7 @@ public:
     Button(int _gpio, uint8_t _buttomId)
         : gpio(_gpio), buttomId(_buttomId)
     {
-        printf("gpio: %d,, buttomId: %d\n", gpio, buttomId);
+        printf("gpio: %d, buttomId: %d\n", gpio, buttomId);
 
 #ifdef PIGPIO
         gpioSetMode(gpio, PI_INPUT);
